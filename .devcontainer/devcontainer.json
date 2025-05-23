@@ -22,7 +22,8 @@
 				"ms-python.vscode-pylance",
 				"KevinRose.vsc-python-indent",
 				"VisualStudioExptTeam.vscodeintellicode",
-				"mechatroner.rainbow-csv"
+				"mechatroner.rainbow-csv",
+				"qwtel.sqlite-viewer"
 			]
 		}
 	}

@@ -118,6 +118,7 @@ def report():
 
     return render_template('report.html', entries=entries, total=total)
   
+
 @app.route('/logout')  
 @login_required  
 def logout():  
