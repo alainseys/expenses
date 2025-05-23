@@ -10,7 +10,7 @@
     <div class="container mt-5">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Expenses</a>
+    <a class="navbar-brand" href="#">Welcome: {{ user.username }}</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -35,18 +35,7 @@
 
 
 
-        <div class="card shadow p-4">  
-            <h2>Welcome, {{ user.username }}!</h2>  
-            <p>You are successfully logged in.</p>  
-
-
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>  
-            <a href="{{ url_for('report') }}">View Report</a>
-            <a href="{{ url_for('add_entry') }}">Add Entry</a> |
-            <a href="{{ url_for('report') }}">View Report</a>
-
-
-        </div>  
     </div>  
+    
     </body>  
     </html>  

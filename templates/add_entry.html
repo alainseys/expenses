@@ -9,17 +9,17 @@
     <body> 
     <div class="container mt-5" style="max-width: 400px;">  
     <div class="card shadow p-4">  
-        <form method="POST">
+        <form method="POST" onsubmit="return validateForm()">
             <h3 class="mb-3">Add Entry</h3>
             <div class="mb-3">
                 <label for="Amount" class="form-label">Amount</label>
-                <input type="text" class="form-control" id="amount" name="amount" required autofocus>
+                <input type="text" class="form-control" id="amount" name="amount" required autofocus pattern="^\d+(\.\d{1,2})?$" required autofocus placeholder="Only numbers allowed" />  
 
                 <label for="Description" name="description" class="form-label">Description</label>
                 <input type="text" class="form-control" id="description" name="description" required autofocus>
 
                 <label for="Description" name="description" class="form-label">Type</label>                
-                <select class="form-select" id="type" name="type" required>
+                <select class="form-select" id="type" name="type" required pattern="^\d+(\.\d{1,2})?$" required autofocus placeholder="Only numbers allowed">
                     <option value="income">Income</option>
                     <option value="expense">Expense</option>
                 </select>
@@ -36,21 +36,18 @@
                 <button type="submit" class="btn btn-primary w-100 mt-3">Add Entry</button>
 
 
-                
-
-
-
-
-
     </div>
-    <!--Amount: <input type="number" name="amount" step="0.01" required><br>
-    Description: <input type="text" name="description" required><br>
-    Type: 
-    <select name="type">
-        <option value="income">Income</option>
-        <option value="expense">Expense</option>
-    </select><br>
-    Account: <input type="text" name="account" required><br>
-    Date: <input type="date" name="date" required><br>
-    <button type="submit">Add Entry</button>!-->
+
 </form>
+<script>
+function validateForm() {
+    const amount = document.getElementById('amount').value;
+    const amountPattern = /^\d+(\.\d{1,2})?$/;  // Allows integer or decimal up to 2 decimal places
+
+    if (!amountPattern.test(amount)) {
+        alert("Amount must be a valid number (e.g., 100 or 100.50). Text is not allowed.");
+        return false;
+    }
+    return true;
+}
+</script>
