@@ -1,10 +1,10 @@
-from flask import Flask, render_template,render_template_string, request, redirect, url_for, session, flash  
-from flask_sqlalchemy import SQLAlchemy  
-from werkzeug.security import generate_password_hash, check_password_hash  
-from functools import wraps 
+from flask import Flask, render_template, request, redirect, url_for, session, flash 
+from datetime import datetime
+
 from dotenv import load_dotenv
-load_dotenv()  # Load environment variables from .env file 
-import os
+from functools import wraps
+import os 
+from extensions import db  # Import the SQLAlchemy instance from extensions.py
 
 SITE_KEY = os.getenv('SITE_KEY')  # Get the site key from environment variables
 
@@ -13,20 +13,19 @@ app.secret_key = SITE_KEY  # Change this to a random secret key in production
   
 # SQLite database configuration  
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'  
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  
-db = SQLAlchemy(app)  
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+ 
+db.init_app(app)
+
+# Import the models
+from Models.user import User
+from Models.entry import FinancialEntry
+
+with app.app_context():
+    db.create_all()  # Create database tables if they don't exist
+#db = SQLAlchemy(app)  
   
-# User model  
-class User(db.Model):  
-    id = db.Column(db.Integer, primary_key=True)  
-    username = db.Column(db.String(80), unique=True, nullable=False)  
-    password_hash = db.Column(db.String(128), nullable=False)  
-  
-    def set_password(self, password):  
-        self.password_hash = generate_password_hash(password)  
-  
-    def check_password(self, password):  
-        return check_password_hash(self.password_hash, password)  
+
   
 # Create database tables if not exist  
 with app.app_context():  
@@ -84,8 +83,40 @@ def register():
             return redirect(url_for('login'))  
   
     return render_template('register.html')
-    
-  
+
+@app.route('/entry', methods=['GET', 'POST'])
+@login_required
+def add_entry():
+    if request.method == 'POST':
+        amount = float(request.form['amount'])
+        description = request.form['description']
+        entry_type = request.form['type']  # "income" or "expense"
+        account = request.form['account']
+        date = datetime.strptime(request.form['date'], '%Y-%m-%d')
+
+        entry = FinancialEntry(
+            user_id=session['user_id'],
+            amount=amount,
+            description=description,
+            is_income=(entry_type == 'income'),
+            account=account,
+            date=date
+        )
+        db.session.add(entry)
+        db.session.commit()
+        flash('Entry added.', 'success')
+        return redirect(url_for('report'))
+
+    return render_template('add_entry.html')
+
+@app.route('/report')
+@login_required
+def report():
+    user_id = session['user_id']
+    entries = FinancialEntry.query.filter_by(user_id=user_id).order_by(FinancialEntry.date.desc()).all()
+    total = sum(e.amount if e.is_income else -e.amount for e in entries)
+
+    return render_template('report.html', entries=entries, total=total)
   
 @app.route('/logout')  
 @login_required  
